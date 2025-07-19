@@ -53,6 +53,7 @@ type linkProperty struct {
 	Link link `json:"link"`
 }
 
+// DATA QUERIES
 type dataQueries struct {
 	Area linkProperty `json:"area"`
 	Corridor linkProperty `json:"corridor"`
@@ -64,6 +65,20 @@ type dataQueries struct {
 	Trajectory linkProperty `json:"trajectory"`
 }
 
+// EXTENT
+type spatial struct {
+	BBox string `json:"bbox"`
+	CRS string `json:"crs"`
+}
+
+type extent struct {
+	Spatial spatial `json:"spatial"`
+	Temporal string `json:"temporal"`
+	Vertical string `json:"vertical"`
+}
+
+
+// LANDING PAGE
 type landing struct {
 	Title string `json:"title"`
 	Description string `json:"description"`
@@ -80,8 +95,8 @@ type collection struct {
 	CRS string `json:"crs"`
 	DataQueries dataQueries `json:"data_queries"`
 	ParameterNames string `json:"parameter_names"`
-	OutputFormats string `json:"output_formats"`
-	Extent string `json:"extent"`
+	OutputFormats []string `json:"output_formats"`
+	Extent extent `json:"extent"`
 	Links []link `json:"links"`
 }
 
@@ -95,7 +110,7 @@ func getLanding(c *gin.Context) {
 		Links: []link{
 			{Href: "http://localhost:8080/", Rel: "self",},
 			{Href: "http://localhost:8080/api", Rel: "service-desc",},
-			{Href: "http://localhost:8080/collections", Type: "application/json",},
+			{Href: "http://localhost:8080/collections", Rel: "data", Type: "application/json",},
 			{Href: "http://localhost:8080/conformance", Rel: "conformance",},
 		},
 	})
@@ -106,11 +121,43 @@ func getCollections(c *gin.Context) {
 		Collections: []collection{
 			{
 				ID: "regional-pressure-settings",
+				CRS: "EPSG:4326",
+				Extent: extent{
+					Spatial: spatial{
+						BBox: "-90,-180,90,180",
+						CRS: "EPSG:4326",
+					},
+				},
+				ParameterNames: "qnh",
+				OutputFormats: []string{"CSV", "GeoJSON", "CoverageJSON"},
 				DataQueries: dataQueries{
 					Area: linkProperty{
 						Link: link{
 							Href: "http://localhost:8080/collections/regional-pressure-settings/area",
+							Rel: "data",
+							Type: "application/json",
 						},
+					},
+					Position: linkProperty{
+						Link: link{
+							Href: "http://localhost:8080/collections/regional-pressure-settings/position",
+							Rel: "data",
+							Type: "application/json",
+						},
+					},
+					Locations: linkProperty{
+						Link: link{
+							Href: "http://localhost:8080/collections/regional-pressure-settings/locations",
+							Rel: "data",
+							Type: "application/json",
+						},
+					},
+				},
+				Links: []link{
+					{
+						Href: "http://localhost:8080/collections/regional-pressure-settings",
+						Rel: "self",
+						Type: "application/json",
 					},
 				},
 			},
