@@ -26,6 +26,12 @@ type collections struct {
 
 type collection struct {
 	ID string `json:"id"`
+	CRS string `json:"crs"`
+	DataQueries string `json:"data_queries"`
+	ParameterNames string `json:"parameter_names"`
+	OutputFormats string `json:"output_formats"`
+	Extent string `json:"extent"`
+	Links []link `json:"links"`
 }
 
 func getLanding(c *gin.Context) {
