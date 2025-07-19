@@ -43,10 +43,10 @@ func ParseFormat(str string) (Format, bool) {
 
 // LINK
 type link struct {
-	Href string `json:"href"`
-	Rel string `json:"rel"`
-	Type string `json:"type"`
-	Title string `json:"title"`
+	Href string `json:"href,omitempty"`
+	Rel string `json:"rel,omitempty"`
+	Type string `json:"type,omitempty"`
+	Title string `json:"title,omitempty"`
 }
 
 type linkProperty struct {
@@ -55,19 +55,19 @@ type linkProperty struct {
 
 // DATA QUERIES
 type dataQueries struct {
-	Area linkProperty `json:"area"`
-	Corridor linkProperty `json:"corridor"`
-	Cube linkProperty `json:"cube"`
-	Items linkProperty `json:"items"`
-	Locations linkProperty `json:"locations"`
-	Position linkProperty `json:"position"`
-	Radius linkProperty `json:"radius"`
-	Trajectory linkProperty `json:"trajectory"`
+	Area *linkProperty `json:"area,omitempty"`
+	Corridor *linkProperty `json:"corridor,omitempty"`
+	Cube *linkProperty `json:"cube,omitempty"`
+	Items *linkProperty `json:"items,omitempty"`
+	Locations *linkProperty `json:"locations,omitempty"`
+	Position *linkProperty `json:"position,omitempty"`
+	Radius *linkProperty `json:"radius,omitempty"`
+	Trajectory *linkProperty `json:"trajectory,omitempty"`
 }
 
 // EXTENT
 type spatial struct {
-	BBox string `json:"bbox"`
+	BBox []float32 `json:"bbox"`
 	CRS string `json:"crs"`
 }
 
@@ -124,28 +124,28 @@ func getCollections(c *gin.Context) {
 				CRS: "EPSG:4326",
 				Extent: extent{
 					Spatial: spatial{
-						BBox: "-90,-180,90,180",
+						BBox: []float32{-90,-180,90,180},
 						CRS: "EPSG:4326",
 					},
 				},
 				ParameterNames: "qnh",
 				OutputFormats: []string{"CSV", "GeoJSON", "CoverageJSON"},
 				DataQueries: dataQueries{
-					Area: linkProperty{
+					Area: &linkProperty{
 						Link: link{
 							Href: "http://localhost:8080/collections/regional-pressure-settings/area",
 							Rel: "data",
 							Type: "application/json",
 						},
 					},
-					Position: linkProperty{
+					Position: &linkProperty{
 						Link: link{
 							Href: "http://localhost:8080/collections/regional-pressure-settings/position",
 							Rel: "data",
 							Type: "application/json",
 						},
 					},
-					Locations: linkProperty{
+					Locations: &linkProperty{
 						Link: link{
 							Href: "http://localhost:8080/collections/regional-pressure-settings/locations",
 							Rel: "data",
@@ -173,17 +173,17 @@ func getCollection(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, collection{
 		ID: id,
 		DataQueries: dataQueries{
-			Area: linkProperty{
+			Area: &linkProperty{
 				Link: link{
 					Href: fmt.Sprintf("http://localhost:8080/collections/%s/area", id),
 				},
 			},
-			Position: linkProperty{
+			Position: &linkProperty{
 				Link: link{
 					Href: fmt.Sprintf("http://localhost:8080/collections/%s/position", id),
 				},
 			},
-			Locations: linkProperty{
+			Locations: &linkProperty{
 				Link: link{
 					Href: fmt.Sprintf("http://localhost:8080/collections/%s/locations", id),
 				},
