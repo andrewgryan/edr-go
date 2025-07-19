@@ -2,10 +2,7 @@ module example/edr-go
 
 go 1.22.1
 
-require (
-	github.com/gin-gonic/gin v1.10.1
-	rsc.io/quote v1.5.2
-)
+require github.com/gin-gonic/gin v1.10.1
 
 require (
 	github.com/bytedance/sonic v1.11.6 // indirect
@@ -34,5 +31,4 @@ require (
 	golang.org/x/text v0.15.0 // indirect
 	google.golang.org/protobuf v1.34.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	rsc.io/sampler v1.3.0 // indirect
 )

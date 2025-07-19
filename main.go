@@ -5,42 +5,62 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-import "fmt"
 
-import "rsc.io/quote"
-
-
-type album struct {
-	ID string `json:"id"`
+type link struct {
+	Href string `json:"href"`
+	Rel string `json:"rel"`
+	Type string `json:"type"`
 	Title string `json:"title"`
-	Artist string `json:"artist"`
-	Price float64 `json:"price"`
 }
 
-var albums = []album{
-	{ID: "1", Title: "Blue Train", Artist: "John Coltrane", Price: 0.0},
-	{ID: "2", Title: "Jeru", Artist: "Gerry Mulligan", Price: 0.0},
-	{ID: "3", Title: "Sarah Vaughan and Clifford Brown", Artist: "Sarah Vaughan", Price: 0.0},
+type landing struct {
+	Title string `json:"title"`
+	Description string `json:"description"`
+	Links []link `json:"links"`
 }
 
-func getAlbums(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, albums)
+type collections struct {
+	Collections []collection `json:"collections"`
+	Links []link `json:"links"`
 }
 
-func postAlbums(c *gin.Context) {
-	var newAlbum album
-	if err := c.BindJSON(&newAlbum); err != nil {
-		return
-	}
+type collection struct {
+	ID string `json:"id"`
+}
 
-	albums = append(albums, newAlbum)
-	c.IndentedJSON(http.StatusOK, albums)
+func getLanding(c *gin.Context) {
+	c.IndentedJSON(http.StatusOK, landing{
+		Title: "Environmental Data Retrieval server",
+		Links: []link{
+			{Href: "http://localhost:8080/", Rel: "self",},
+			{Href: "http://localhost:8080/api", Rel: "service-desc",},
+			{Href: "http://localhost:8080/collections", Type: "application/json",},
+			{Href: "http://localhost:8080/conformance", Rel: "conformance",},
+		},
+	})
+}
+
+func getCollections(c *gin.Context) {
+	c.IndentedJSON(http.StatusOK, collections{
+		Collections: []collection{
+			{ID: "regional-pressure-settings"},
+			{ID: "open-runway"},
+			{ID: "de-icing"},
+		},
+		Links: []link{},
+	})
+}
+
+func getCollection(c *gin.Context) {
+	id := c.Param("id")
+	c.IndentedJSON(http.StatusOK, collection{ID: id})
 }
 
 func main() {
-	fmt.Println(quote.Go())
+	// Environmental Data Retrieval API
 	router := gin.Default()
-	router.GET("/albums", getAlbums)
-	router.POST("/albums", postAlbums)
+	router.GET("/", getLanding)
+	router.GET("/collections", getCollections)
+	router.GET("/collections/:id", getCollection)
 	router.Run("localhost:8080")
 }
