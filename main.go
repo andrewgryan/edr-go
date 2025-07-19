@@ -49,6 +49,10 @@ type collection struct {
 	Links []link `json:"links"`
 }
 
+type area struct {}
+type position struct {}
+type locations struct {}
+
 func getLanding(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, landing{
 		Title: "Environmental Data Retrieval server",
@@ -96,11 +100,31 @@ func getCollection(c *gin.Context) {
 	})
 }
 
+func getArea(c *gin.Context) {
+	// id := c.Param("id")
+	coords := c.Query("coords")
+	fmt.Println(coords)
+	c.IndentedJSON(http.StatusOK, area{})
+}
+
+func getPosition(c *gin.Context) {
+	// id := c.Param("id")
+	c.IndentedJSON(http.StatusOK, position{})
+}
+
+func getLocations(c *gin.Context) {
+	// id := c.Param("id")
+	c.IndentedJSON(http.StatusOK, locations{})
+}
+
 func main() {
 	// Environmental Data Retrieval API
 	router := gin.Default()
 	router.GET("/", getLanding)
 	router.GET("/collections", getCollections)
 	router.GET("/collections/:id", getCollection)
+	router.GET("/collections/:id/area", getArea)
+	router.GET("/collections/:id/position", getPosition)
+	router.GET("/collections/:id/locations", getLocations)
 	router.Run("localhost:8080")
 }
