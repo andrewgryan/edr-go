@@ -148,9 +148,9 @@ func getCollection(c *gin.Context) {
 func getArea(c *gin.Context) {
 	// id := c.Param("id")
 	coords := c.Query("coords")
-	f := c.DefaultQuery("f", "CSV")
+	f, _ := ParseFormat(c.DefaultQuery("f", "CSV"))
 	fmt.Println(coords)
-	fmt.Println(ParseFormat(f))
+	fmt.Println(f)
 	c.IndentedJSON(http.StatusOK, area{})
 }
 
