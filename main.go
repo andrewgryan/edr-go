@@ -4,8 +4,44 @@ import (
 	"fmt"
 	"net/http"
 	"github.com/gin-gonic/gin"
+	"strings"
 )
 
+// FORMAT
+type Format int
+
+const (
+	CSV Format = iota
+	CoverageJSON
+	GeoJSON
+	NetCDF4
+)
+
+var formatName = map[Format]string {
+	CSV: "csv",
+	CoverageJSON: "coveragejson",
+	GeoJSON: "geojson",
+	NetCDF4: "netcdf4",
+}
+
+var formatId = map[string]Format {
+	"csv": CSV,
+	"coveragejson": CoverageJSON,
+	"geojson": GeoJSON,
+	"netcdf4": NetCDF4,
+}
+
+func (f Format) String() string {
+	return formatName[f]
+}
+
+func ParseFormat(str string) (Format, bool) {
+	c, ok := formatId[strings.ToLower(str)]
+	return c, ok
+}
+
+
+// LINK
 type link struct {
 	Href string `json:"href"`
 	Rel string `json:"rel"`
@@ -68,7 +104,16 @@ func getLanding(c *gin.Context) {
 func getCollections(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, collections{
 		Collections: []collection{
-			{ID: "regional-pressure-settings"},
+			{
+				ID: "regional-pressure-settings",
+				DataQueries: dataQueries{
+					Area: linkProperty{
+						Link: link{
+							Href: "http://localhost:8080/collections/regional-pressure-settings/area",
+						},
+					},
+				},
+			},
 			{ID: "open-runway"},
 			{ID: "de-icing"},
 		},
@@ -103,7 +148,9 @@ func getCollection(c *gin.Context) {
 func getArea(c *gin.Context) {
 	// id := c.Param("id")
 	coords := c.Query("coords")
+	f := c.DefaultQuery("f", "CSV")
 	fmt.Println(coords)
+	fmt.Println(ParseFormat(f))
 	c.IndentedJSON(http.StatusOK, area{})
 }
 
