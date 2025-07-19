@@ -1,16 +1,31 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"github.com/gin-gonic/gin"
 )
-
 
 type link struct {
 	Href string `json:"href"`
 	Rel string `json:"rel"`
 	Type string `json:"type"`
 	Title string `json:"title"`
+}
+
+type linkProperty struct {
+	Link link `json:"link"`
+}
+
+type dataQueries struct {
+	Area linkProperty `json:"area"`
+	Corridor linkProperty `json:"corridor"`
+	Cube linkProperty `json:"cube"`
+	Items linkProperty `json:"items"`
+	Locations linkProperty `json:"locations"`
+	Position linkProperty `json:"position"`
+	Radius linkProperty `json:"radius"`
+	Trajectory linkProperty `json:"trajectory"`
 }
 
 type landing struct {
@@ -27,7 +42,7 @@ type collections struct {
 type collection struct {
 	ID string `json:"id"`
 	CRS string `json:"crs"`
-	DataQueries string `json:"data_queries"`
+	DataQueries dataQueries `json:"data_queries"`
 	ParameterNames string `json:"parameter_names"`
 	OutputFormats string `json:"output_formats"`
 	Extent string `json:"extent"`
@@ -59,7 +74,26 @@ func getCollections(c *gin.Context) {
 
 func getCollection(c *gin.Context) {
 	id := c.Param("id")
-	c.IndentedJSON(http.StatusOK, collection{ID: id})
+	c.IndentedJSON(http.StatusOK, collection{
+		ID: id,
+		DataQueries: dataQueries{
+			Area: linkProperty{
+				Link: link{
+					Href: fmt.Sprintf("http://localhost:8080/collections/%s/area", id),
+				},
+			},
+			Position: linkProperty{
+				Link: link{
+					Href: fmt.Sprintf("http://localhost:8080/collections/%s/position", id),
+				},
+			},
+			Locations: linkProperty{
+				Link: link{
+					Href: fmt.Sprintf("http://localhost:8080/collections/%s/locations", id),
+				},
+			},
+		},
+	})
 }
 
 func main() {
