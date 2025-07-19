@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	"encoding/csv"
 	"fmt"
 	"net/http"
 	"github.com/gin-gonic/gin"
@@ -242,7 +244,20 @@ func getPosition(c *gin.Context) {
 
 func getLocations(c *gin.Context) {
 	// id := c.Param("id")
-	c.IndentedJSON(http.StatusOK, locations{})
+	records := [][]string{
+		{"id", "qnh"},
+		{"01", "1000"},
+		{"02", "1005"},
+		{"03", "994"},
+		{"04", "1010"},
+		{"05", "1008"},
+	}
+	buffer := new(bytes.Buffer)
+	writer := csv.NewWriter(buffer)
+	writer.WriteAll(records)
+	c.Writer.Write(buffer.Bytes())
+
+	// c.IndentedJSON(http.StatusOK, locations{})
 }
 
 func main() {
