@@ -40,13 +40,29 @@ func ParseFormat(str string) (Format, bool) {
 	return c, ok
 }
 
+// VARIABLES
+type variables struct {
+	Title string `json:"title,omitempty"`
+	Description string `json:"description,omitempty"`
+	QueryType string `json:"query_type,omitempty"`
+	Coords string `json:"coords,omitempty"`
+	WithinUnits string `json:"within_units,omitempty"`
+	WidthUnits string `json:"width_units,omitempty"`
+	HeightUnits string `json:"height_units,omitempty"`
+	OutputFormats []string `json:"output_formats,omitempty"`
+	DefaultOutputFormat string `json:"default_output_format,omitempty"`
+	CRSDetails string `json:"crs_details,omitempty"`
+}
 
 // LINK
 type link struct {
 	Href string `json:"href,omitempty"`
+	Hreflang string `json:"hreflang,omitempty"`
 	Rel string `json:"rel,omitempty"`
 	Type string `json:"type,omitempty"`
 	Title string `json:"title,omitempty"`
+	Templated bool `json:"templated,omitempty"`
+	Variables *variables `json:"variables,omitempty"`
 }
 
 type linkProperty struct {
@@ -136,6 +152,12 @@ func getCollections(c *gin.Context) {
 							Href: "http://localhost:8080/collections/regional-pressure-settings/area",
 							Rel: "data",
 							Type: "application/json",
+							Variables: &variables{
+								Title: "Area query",
+								QueryType: "area",
+								OutputFormats: []string{"CoverageJSON"},
+								DefaultOutputFormat: "CoverageJSON",
+							},
 						},
 					},
 					Position: &linkProperty{
@@ -143,6 +165,12 @@ func getCollections(c *gin.Context) {
 							Href: "http://localhost:8080/collections/regional-pressure-settings/position",
 							Rel: "data",
 							Type: "application/json",
+							Variables: &variables{
+								Title: "Position query",
+								QueryType: "position",
+								OutputFormats: []string{"CoverageJSON", "NetCDF4"},
+								DefaultOutputFormat: "CoverageJSON",
+							},
 						},
 					},
 					Locations: &linkProperty{
@@ -150,6 +178,12 @@ func getCollections(c *gin.Context) {
 							Href: "http://localhost:8080/collections/regional-pressure-settings/locations",
 							Rel: "data",
 							Type: "application/json",
+							Variables: &variables{
+								Title: "Locations query",
+								QueryType: "locations",
+								OutputFormats: []string{"CoverageJSON", "CSV"},
+								DefaultOutputFormat: "CSV",
+							},
 						},
 					},
 				},
