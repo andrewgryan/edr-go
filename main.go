@@ -412,26 +412,15 @@ func getLocations(c *gin.Context) {
 		c.IndentedJSON(http.StatusOK, newCoverage())
 		return
 	case GeoJSON:
-		features := []feature{
-			newFeature("01", newPolygon([][]float32{
+		var features []feature
+		for _, record := range records {
+			features = append(features, newFeature(record[0], newPolygon([][]float32{
 				{0, 0},
 				{1, 1},
 				{1, 0},
 				{0, 0},
-			})),
-			newFeature("02", newPolygon([][]float32{
-				{0, 0},
-				{1, 1},
-				{1, 0},
-				{0, 0},
-			})),
-			newFeature("23", newPolygon([][]float32{
-				{0, 0},
-				{1, 1},
-				{1, 0},
-				{0, 0},
-			})),
-		}
+			})))
+		} 
 		c.IndentedJSON(http.StatusOK, newFeatureCollection(features))
 		return
 	default:
