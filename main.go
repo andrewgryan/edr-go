@@ -215,6 +215,42 @@ func newCoverage() *coverage {
 	return &cov
 }
 
+// GEOJSON
+type geometry struct {
+	Type string `json:"type"`
+	Coordinates []float32 `json:"coordinates"`
+}
+func newPoint() *geometry {
+	return &geometry{
+		Type: "Point",
+		Coordinates: []float32{},
+	}
+}
+
+type properties struct {
+	Name string `json:"name"`
+}
+func newProperties() *properties {
+	return &properties{
+		Name: "Heathrow airport",
+	}
+}
+
+type geojson struct {
+	Type string `json:"type"`
+	Geometry *geometry `json:"geometry"`
+	Properties *properties `json:"properties"`
+}
+
+func newGeoJSON() *geojson {
+	return &geojson{
+		Type: "Feature",
+		Geometry: newPoint(),
+		Properties: newProperties(),
+	}
+}
+
+
 // HTTP HANDLERS
 
 func getLanding(c *gin.Context) {
@@ -358,6 +394,9 @@ func getLocations(c *gin.Context) {
 		return
 	case CoverageJSON:
 		c.IndentedJSON(http.StatusOK, newCoverage())
+		return
+	case GeoJSON:
+		c.IndentedJSON(http.StatusOK, newGeoJSON())
 		return
 	default:
 		panic(fmt.Errorf("Unsupported format: '%s'", f))
