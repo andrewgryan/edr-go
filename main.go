@@ -390,41 +390,67 @@ func getPosition(c *gin.Context) {
 }
 
 func getLocations(c *gin.Context) {
-	// id := c.Param("id")
-	records := [][]string{
-		{"id", "qnh"},
-		{"01", "1000"},
-		{"02", "1005"},
-		{"03", "994"},
-		{"04", "1010"},
-		{"05", "1008"},
-	}
-	f, _ := ParseFormat(c.DefaultQuery("f", "GeoJSON"))
-	switch f {
-	case CSV:
-		buffer := new(bytes.Buffer)
-		writer := csv.NewWriter(buffer)
-		writer.WriteAll(records)
-		c.Header("Content-Type", "text/csv")
-		c.Writer.Write(buffer.Bytes())
-		return
-	case CoverageJSON:
-		c.IndentedJSON(http.StatusOK, newCoverage())
-		return
-	case GeoJSON:
-		var features []feature
-		for _, record := range records {
-			features = append(features, newFeature(record[0], newPolygon([][]float32{
-				{0, 0},
-				{1, 1},
-				{1, 0},
-				{0, 0},
-			})))
-		} 
-		c.IndentedJSON(http.StatusOK, newFeatureCollection(features))
-		return
+	id := c.Param("id")
+	switch id {
+	case "regional-pressure-settings":
+		// SIMULATE REGIONAL PRESSURE SETTINGS
+		records := [][]string{
+			{"01", "20250720T0000Z", "1000"},
+			{"02", "20250720T0000Z", "1005"},
+			{"03", "20250720T0000Z", "994"},
+			{"04", "20250720T0000Z", "1010"},
+			{"07", "20250720T0000Z", "1008"},
+			{"08", "20250720T0000Z", "1012"},
+			{"09", "20250720T0000Z", "1011"},
+			{"10", "20250720T0000Z", "1009"},
+			{"11", "20250720T0000Z", "1007"},
+			{"12", "20250720T0000Z", "1002"},
+			{"01", "20250720T0100Z", "1000"},
+			{"02", "20250720T0100Z", "1005"},
+			{"03", "20250720T0100Z", "994"},
+			{"04", "20250720T0100Z", "1010"},
+			{"07", "20250720T0100Z", "1008"},
+			{"08", "20250720T0100Z", "1012"},
+			{"09", "20250720T0100Z", "1011"},
+			{"10", "20250720T0100Z", "1009"},
+			{"11", "20250720T0100Z", "1007"},
+			{"12", "20250720T0100Z", "1002"},
+		}
+		f, _ := ParseFormat(c.DefaultQuery("f", "GeoJSON"))
+		switch f {
+		case CSV:
+			rows := [][]string{
+				{"region", "time", "qnh"},
+			}
+			for _, record := range records {
+				rows = append(rows, record)
+			}
+			buffer := new(bytes.Buffer)
+			writer := csv.NewWriter(buffer)
+			writer.WriteAll(rows)
+			c.Header("Content-Type", "text/csv")
+			c.Writer.Write(buffer.Bytes())
+			return
+		case CoverageJSON:
+			c.IndentedJSON(http.StatusOK, newCoverage())
+			return
+		case GeoJSON:
+			var features []feature
+			for _, record := range records {
+				features = append(features, newFeature(record[0], newPolygon([][]float32{
+					{0, 0},
+					{1, 1},
+					{1, 0},
+					{0, 0},
+				})))
+			} 
+			c.IndentedJSON(http.StatusOK, newFeatureCollection(features))
+			return
+		default:
+			panic(fmt.Errorf("Unsupported format: '%s'", f))
+		}
 	default:
-		panic(fmt.Errorf("Unsupported format: '%s'", f))
+		panic(fmt.Errorf("Unrecognised collection: '%s'", id))
 	}
 
 }
