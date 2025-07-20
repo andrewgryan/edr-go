@@ -120,7 +120,55 @@ type collection struct {
 
 type area struct {}
 type position struct {}
-type locations struct {}
+
+// COVERAGEJSON
+type language struct {
+	En string `json:"en"`
+}
+type unit struct {
+	Label language `json:"label"`
+	Symbol string `json:"symbol"`
+}
+type observedProperty struct {
+	ID string `json:"id"`
+	Label language `json:"label"`
+}
+type axis struct {
+	Values []string `json:"values"`
+}
+type axes struct {
+	X axis `json:"x"`
+	Y axis `json:"y"`
+	Z axis `json:"z"`
+	T axis `json:"t"`
+}
+type domain struct {
+	Type string `json:"type"`
+	DomainType string `json:"domainType"`
+	Axes axes `json:"axes"`
+	Referencing string `json:"referencing"`
+}
+type parameter struct {
+	Type string `json:"type"`
+	Description language `json:"description"`
+	Unit unit `json:"unit"`
+	ObservedProperty observedProperty `json:"observedProperty"`
+}
+type ndarray struct {
+	Type string `json:"type"`
+	DataType string `json:"dataType"`
+	AxisNames []string `json:"axisNames"`
+	Shape []int `json:"shape"`
+	Values []float32 `json:"values"`
+}
+type coverage struct {
+	Type string `json:"type"`
+	Domain domain `json:"domain"`
+	Parameters map[string]parameter `json:"parameters"`
+	Ranges map[string]ndarray `json:"ranges"`
+}
+
+// HTTP HANDLERS
 
 func getLanding(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, landing{
@@ -252,13 +300,22 @@ func getLocations(c *gin.Context) {
 		{"04", "1010"},
 		{"05", "1008"},
 	}
-	buffer := new(bytes.Buffer)
-	writer := csv.NewWriter(buffer)
-	writer.WriteAll(records)
-	c.Header("Content-Type", "text/csv")
-	c.Writer.Write(buffer.Bytes())
+	f, _ := ParseFormat(c.DefaultQuery("f", "CSV"))
+	switch f {
+	case CSV:
+		buffer := new(bytes.Buffer)
+		writer := csv.NewWriter(buffer)
+		writer.WriteAll(records)
+		c.Header("Content-Type", "text/csv")
+		c.Writer.Write(buffer.Bytes())
+		return
+	case CoverageJSON:
+		c.IndentedJSON(http.StatusOK, coverage{})
+		return
+	default:
+		panic(fmt.Errorf("Unsupported format: '%s'", f))
+	}
 
-	// c.IndentedJSON(http.StatusOK, locations{})
 }
 
 func main() {
