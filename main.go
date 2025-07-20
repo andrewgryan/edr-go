@@ -255,6 +255,7 @@ func getLocations(c *gin.Context) {
 	buffer := new(bytes.Buffer)
 	writer := csv.NewWriter(buffer)
 	writer.WriteAll(records)
+	c.Header("Content-Type", "text/csv")
 	c.Writer.Write(buffer.Bytes())
 
 	// c.IndentedJSON(http.StatusOK, locations{})
