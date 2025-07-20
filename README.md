@@ -34,8 +34,14 @@ GeoJSON has a wide variety of geometries.
 A FeatureCollection allows for multiple locations to be returned in a single request.
 
 ```sh
-curl -s 'http://localhost:8080/collections/regional-pressure-settings/locations?f=CSV'
-curl -s 'http://localhost:8080/collections/regional-pressure-settings/locations?f=CoverageJSON'
-curl -s 'http://localhost:8080/collections/regional-pressure-settings/locations?f=GeoJSON'
+curl -s 'http://localhost:8080/collections/regional-pressure-settings/locations?f=CSV' | column -s, -t
+```
+
+```sh
+curl -s 'http://localhost:8080/collections/regional-pressure-settings/locations?f=CoverageJSON' | jq
+```
+
+```sh
+curl -s 'http://localhost:8080/collections/regional-pressure-settings/locations?f=GeoJSON' | jq
 ```
 
