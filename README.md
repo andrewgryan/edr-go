@@ -25,3 +25,17 @@ Use a popular command line tool like `jq` to make sense of the response.
 curl -s http://localhost:8080 | jq
 ```
 
+### Format response
+
+The server can package up the result of a query in a variety of formats.
+CSV is a standard tabular format which makes it easy for template engines to iterate through.
+CoverageJSON is ideal for gridded datasets.
+GeoJSON has a wide variety of geometries.
+A FeatureCollection allows for multiple locations to be returned in a single request.
+
+```sh
+curl -s 'http://localhost:8080/collections/regional-pressure-settings/locations?f=CSV'
+curl -s 'http://localhost:8080/collections/regional-pressure-settings/locations?f=CoverageJSON'
+curl -s 'http://localhost:8080/collections/regional-pressure-settings/locations?f=GeoJSON'
+```
+
