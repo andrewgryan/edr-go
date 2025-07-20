@@ -236,17 +236,27 @@ func newProperties() *properties {
 	}
 }
 
-type geojson struct {
+type feature struct {
 	Type string `json:"type"`
 	Geometry *geometry `json:"geometry"`
 	Properties *properties `json:"properties"`
 }
+type featureCollection struct {
+	Type string `json:"type"`
+	Features []*feature `json:"features"`
+}
 
-func newGeoJSON() *geojson {
-	return &geojson{
+func newFeature() *feature {
+	return &feature{
 		Type: "Feature",
 		Geometry: newPoint(),
 		Properties: newProperties(),
+	}
+}
+func newFeatureCollection() *featureCollection {
+	return &featureCollection {
+		Type: "FeatureCollection",
+		Features: []*feature{newFeature()},
 	}
 }
 
@@ -396,7 +406,7 @@ func getLocations(c *gin.Context) {
 		c.IndentedJSON(http.StatusOK, newCoverage())
 		return
 	case GeoJSON:
-		c.IndentedJSON(http.StatusOK, newGeoJSON())
+		c.IndentedJSON(http.StatusOK, newFeatureCollection())
 		return
 	default:
 		panic(fmt.Errorf("Unsupported format: '%s'", f))
