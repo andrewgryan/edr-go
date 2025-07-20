@@ -125,13 +125,20 @@ type position struct {}
 type language struct {
 	En string `json:"en"`
 }
+func English(s string) *language {
+	lang := language{
+		En: s,
+	}
+	return &lang
+}
+
 type unit struct {
-	Label language `json:"label"`
+	Label *language `json:"label"`
 	Symbol string `json:"symbol"`
 }
 type observedProperty struct {
 	ID string `json:"id"`
-	Label language `json:"label"`
+	Label *language `json:"label"`
 }
 type axis[T any] struct {
 	Values []T `json:"values"`
@@ -150,7 +157,7 @@ type domain struct {
 }
 type parameter struct {
 	Type string `json:"type"`
-	Description language `json:"description"`
+	Description *language `json:"description"`
 	Unit unit `json:"unit"`
 	ObservedProperty observedProperty `json:"observedProperty"`
 }
@@ -183,12 +190,20 @@ func newCoverage() *coverage {
 			Referencing: []string{},
 		},
 		Parameters: map[string]parameter{
-			"Example": parameter{
+			"QNH": parameter{
 				Type: "Parameter",
+				Description: English("Atmospheric pressure"),
+				Unit: unit{
+					Label: English("hPa"),
+				},
+				ObservedProperty: observedProperty{
+					ID: "",
+					Label: English("Atmospheric pressure"),
+				},
 			},
 		},
 		Ranges: map[string]ndarray{
-			"Example": ndarray{
+			"QNH": ndarray{
 				Type: "NdArray",
 				DataType: "float",
 				AxisNames: []string{"x", "y", "z", "t"},
