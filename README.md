@@ -45,6 +45,8 @@ It allows a server to express x, y, z, t coordinates and values for n-dimensiona
 curl -s 'http://localhost:8080/collections/regional-pressure-settings/locations?f=CoverageJSON' | jq
 ```
 
+Read more about CoverageJSON at [https://covjson.org/](https://covjson.org/).
+
 ### Format response as GeoJSON
 
 GeoJSON has a wide variety of geometries.
@@ -53,4 +55,6 @@ A FeatureCollection allows for multiple locations to be returned in a single req
 ```sh
 curl -s 'http://localhost:8080/collections/regional-pressure-settings/locations?f=GeoJSON' | jq
 ```
+
+Read more about GeoJSON in the [RFC-7946](https://datatracker.ietf.org/doc/html/rfc7946) specification.
 
