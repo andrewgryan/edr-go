@@ -233,30 +233,21 @@ func newPolygon(coords [][]float32) *geometry {
 	}
 }
 
-type properties struct {
-	Name string `json:"name"`
-}
-func newProperties(name string) *properties {
-	return &properties{
-		Name: name,
-	}
-}
-
 type feature struct {
 	Type string `json:"type"`
 	Geometry *geometry `json:"geometry"`
-	Properties *properties `json:"properties"`
+	Properties map[string]any `json:"properties"`
 }
 type featureCollection struct {
 	Type string `json:"type"`
 	Features []feature `json:"features"`
 }
 
-func newFeature(name string, geo *geometry) feature {
+func newFeature(geo *geometry, props map[string]any) feature {
 	return feature{
 		Type: "Feature",
 		Geometry: geo,
-		Properties: newProperties(name),
+		Properties: props,
 	}
 }
 func newFeatureCollection(features []feature) *featureCollection {
@@ -436,13 +427,18 @@ func getLocations(c *gin.Context) {
 			return
 		case GeoJSON:
 			var features []feature
+			geo := newPolygon([][]float32{
+				{0, 0},
+				{1, 1},
+				{1, 0},
+				{0, 0},
+			})
 			for _, record := range records {
-				features = append(features, newFeature(record[0], newPolygon([][]float32{
-					{0, 0},
-					{1, 1},
-					{1, 0},
-					{0, 0},
-				})))
+				features = append(features, newFeature(geo, map[string]any{
+					"region": record[0],
+					"date": record[1],
+					"pressure": record[2],
+				}))
 			} 
 			c.IndentedJSON(http.StatusOK, newFeatureCollection(features))
 			return
