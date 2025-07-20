@@ -380,6 +380,11 @@ func getPosition(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, position{})
 }
 
+type property struct {
+	Pressure []string
+	Time []string
+}
+
 func getLocations(c *gin.Context) {
 	id := c.Param("id")
 	switch id {
@@ -433,22 +438,28 @@ func getLocations(c *gin.Context) {
 				{1, 0},
 				{0, 0},
 			})
-			pressures := make(map[string][]string)
+			data := make(map[string]property)
 			for _, record := range records {
 				regionID := record[0]
+				time := record[1]
 				pressure := record[2]
-				value, ok := pressures[regionID]
+				value, ok := data[regionID]
 				if ok {
-					value = append(value, pressure)
+					value.Pressure = append(value.Pressure, pressure)
+					value.Time = append(value.Time, time)
 				} else {
-					value = []string{pressure}
+					value = property{
+						Pressure: []string{pressure},
+						Time: []string{time},
+					}
 				}
-				pressures[regionID] = value
+				data[regionID] = value
 			}
-			for regionID, pressure := range pressures {
+			for regionID, datum := range data {
 				features = append(features, newFeature(geo, map[string]any{
 					"region": regionID,
-					"pressure": pressure,
+					"pressure": datum.Pressure,
+					"time": datum.Time,
 				}))
 			} 
 			c.IndentedJSON(http.StatusOK, newFeatureCollection(features))
