@@ -133,20 +133,20 @@ type observedProperty struct {
 	ID string `json:"id"`
 	Label language `json:"label"`
 }
-type axis struct {
-	Values []string `json:"values"`
+type axis[T any] struct {
+	Values []T `json:"values"`
 }
 type axes struct {
-	X axis `json:"x"`
-	Y axis `json:"y"`
-	Z axis `json:"z"`
-	T axis `json:"t"`
+	X axis[float32] `json:"x"`
+	Y axis[float32] `json:"y"`
+	Z axis[float32] `json:"z"`
+	T axis[string] `json:"t"`
 }
 type domain struct {
 	Type string `json:"type"`
 	DomainType string `json:"domainType"`
 	Axes axes `json:"axes"`
-	Referencing string `json:"referencing"`
+	Referencing []string `json:"referencing"`
 }
 type parameter struct {
 	Type string `json:"type"`
@@ -166,6 +166,38 @@ type coverage struct {
 	Domain domain `json:"domain"`
 	Parameters map[string]parameter `json:"parameters"`
 	Ranges map[string]ndarray `json:"ranges"`
+}
+
+func newCoverage() *coverage {
+	cov := coverage{
+		Type: "CoverageJSON",
+		Domain: domain{
+			Type: "Domain",
+			DomainType: "Grid",
+			Axes: axes{
+				X: axis[float32]{ Values: []float32{} },
+				Y: axis[float32]{ Values: []float32{} },
+				Z: axis[float32]{ Values: []float32{} },
+				T: axis[string]{ Values: []string{} },
+			},
+			Referencing: []string{},
+		},
+		Parameters: map[string]parameter{
+			"Example": parameter{
+				Type: "Parameter",
+			},
+		},
+		Ranges: map[string]ndarray{
+			"Example": ndarray{
+				Type: "NdArray",
+				DataType: "float",
+				AxisNames: []string{"x", "y", "z", "t"},
+				Shape: []int{0, 0, 0, 0},
+				Values: []float32{},
+			},
+		},
+	}
+	return &cov
 }
 
 // HTTP HANDLERS
@@ -310,7 +342,7 @@ func getLocations(c *gin.Context) {
 		c.Writer.Write(buffer.Bytes())
 		return
 	case CoverageJSON:
-		c.IndentedJSON(http.StatusOK, coverage{})
+		c.IndentedJSON(http.StatusOK, newCoverage())
 		return
 	default:
 		panic(fmt.Errorf("Unsupported format: '%s'", f))
