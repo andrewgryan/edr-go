@@ -243,20 +243,20 @@ type feature struct {
 }
 type featureCollection struct {
 	Type string `json:"type"`
-	Features []*feature `json:"features"`
+	Features []feature `json:"features"`
 }
 
-func newFeature() *feature {
-	return &feature{
+func newFeature() feature {
+	return feature{
 		Type: "Feature",
 		Geometry: newPoint(),
 		Properties: newProperties(),
 	}
 }
-func newFeatureCollection() *featureCollection {
+func newFeatureCollection(features []feature) *featureCollection {
 	return &featureCollection {
 		Type: "FeatureCollection",
-		Features: []*feature{newFeature()},
+		Features: features,
 	}
 }
 
@@ -324,8 +324,8 @@ func getCollections(c *gin.Context) {
 							Variables: &variables{
 								Title: "Locations query",
 								QueryType: "locations",
-								OutputFormats: []string{"CoverageJSON", "CSV"},
-								DefaultOutputFormat: "CSV",
+								OutputFormats: []string{"GeoJSON", "CoverageJSON", "CSV"},
+								DefaultOutputFormat: "GeoJSON",
 							},
 						},
 					},
@@ -393,7 +393,7 @@ func getLocations(c *gin.Context) {
 		{"04", "1010"},
 		{"05", "1008"},
 	}
-	f, _ := ParseFormat(c.DefaultQuery("f", "CSV"))
+	f, _ := ParseFormat(c.DefaultQuery("f", "GeoJSON"))
 	switch f {
 	case CSV:
 		buffer := new(bytes.Buffer)
@@ -406,7 +406,12 @@ func getLocations(c *gin.Context) {
 		c.IndentedJSON(http.StatusOK, newCoverage())
 		return
 	case GeoJSON:
-		c.IndentedJSON(http.StatusOK, newFeatureCollection())
+		features := []feature{
+			newFeature(),
+			newFeature(),
+			newFeature(),
+		}
+		c.IndentedJSON(http.StatusOK, newFeatureCollection(features))
 		return
 	default:
 		panic(fmt.Errorf("Unsupported format: '%s'", f))
