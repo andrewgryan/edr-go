@@ -433,11 +433,22 @@ func getLocations(c *gin.Context) {
 				{1, 0},
 				{0, 0},
 			})
+			pressures := make(map[string][]string)
 			for _, record := range records {
+				regionID := record[0]
+				pressure := record[2]
+				value, ok := pressures[regionID]
+				if ok {
+					value = append(value, pressure)
+				} else {
+					value = []string{pressure}
+				}
+				pressures[regionID] = value
+			}
+			for regionID, pressure := range pressures {
 				features = append(features, newFeature(geo, map[string]any{
-					"region": record[0],
-					"date": record[1],
-					"pressure": record[2],
+					"region": regionID,
+					"pressure": pressure,
 				}))
 			} 
 			c.IndentedJSON(http.StatusOK, newFeatureCollection(features))
