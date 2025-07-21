@@ -473,7 +473,7 @@ func getLocations(c *gin.Context) {
 
 }
 
-func main() {
+func setupRouter() *gin.Engine {
 	// Environmental Data Retrieval API
 	router := gin.Default()
 	router.GET("/", getLanding)
@@ -482,5 +482,10 @@ func main() {
 	router.GET("/collections/:id/area", getArea)
 	router.GET("/collections/:id/position", getPosition)
 	router.GET("/collections/:id/locations", getLocations)
+	return router
+}
+
+func main() {
+	router := setupRouter()
 	router.Run("localhost:8080")
 }
