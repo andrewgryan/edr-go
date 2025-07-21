@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"encoding/csv"
 	"fmt"
-	"net/http"
 	"github.com/gin-gonic/gin"
+	"net/http"
 	"strings"
 )
 
@@ -19,18 +19,18 @@ const (
 	NetCDF4
 )
 
-var formatName = map[Format]string {
-	CSV: "csv",
+var formatName = map[Format]string{
+	CSV:          "csv",
 	CoverageJSON: "coveragejson",
-	GeoJSON: "geojson",
-	NetCDF4: "netcdf4",
+	GeoJSON:      "geojson",
+	NetCDF4:      "netcdf4",
 }
 
-var formatId = map[string]Format {
-	"csv": CSV,
+var formatId = map[string]Format{
+	"csv":          CSV,
 	"coveragejson": CoverageJSON,
-	"geojson": GeoJSON,
-	"netcdf4": NetCDF4,
+	"geojson":      GeoJSON,
+	"netcdf4":      NetCDF4,
 }
 
 func (f Format) String() string {
@@ -44,26 +44,26 @@ func ParseFormat(str string) (Format, bool) {
 
 // VARIABLES
 type variables struct {
-	Title string `json:"title,omitempty"`
-	Description string `json:"description,omitempty"`
-	QueryType string `json:"query_type,omitempty"`
-	Coords string `json:"coords,omitempty"`
-	WithinUnits string `json:"within_units,omitempty"`
-	WidthUnits string `json:"width_units,omitempty"`
-	HeightUnits string `json:"height_units,omitempty"`
-	OutputFormats []string `json:"output_formats,omitempty"`
-	DefaultOutputFormat string `json:"default_output_format,omitempty"`
-	CRSDetails string `json:"crs_details,omitempty"`
+	Title               string   `json:"title,omitempty"`
+	Description         string   `json:"description,omitempty"`
+	QueryType           string   `json:"query_type,omitempty"`
+	Coords              string   `json:"coords,omitempty"`
+	WithinUnits         string   `json:"within_units,omitempty"`
+	WidthUnits          string   `json:"width_units,omitempty"`
+	HeightUnits         string   `json:"height_units,omitempty"`
+	OutputFormats       []string `json:"output_formats,omitempty"`
+	DefaultOutputFormat string   `json:"default_output_format,omitempty"`
+	CRSDetails          string   `json:"crs_details,omitempty"`
 }
 
 // LINK
 type link struct {
-	Href string `json:"href,omitempty"`
-	Hreflang string `json:"hreflang,omitempty"`
-	Rel string `json:"rel,omitempty"`
-	Type string `json:"type,omitempty"`
-	Title string `json:"title,omitempty"`
-	Templated bool `json:"templated,omitempty"`
+	Href      string     `json:"href,omitempty"`
+	Hreflang  string     `json:"hreflang,omitempty"`
+	Rel       string     `json:"rel,omitempty"`
+	Type      string     `json:"type,omitempty"`
+	Title     string     `json:"title,omitempty"`
+	Templated bool       `json:"templated,omitempty"`
 	Variables *variables `json:"variables,omitempty"`
 }
 
@@ -73,58 +73,58 @@ type linkProperty struct {
 
 // DATA QUERIES
 type dataQueries struct {
-	Area *linkProperty `json:"area,omitempty"`
-	Corridor *linkProperty `json:"corridor,omitempty"`
-	Cube *linkProperty `json:"cube,omitempty"`
-	Items *linkProperty `json:"items,omitempty"`
-	Locations *linkProperty `json:"locations,omitempty"`
-	Position *linkProperty `json:"position,omitempty"`
-	Radius *linkProperty `json:"radius,omitempty"`
+	Area       *linkProperty `json:"area,omitempty"`
+	Corridor   *linkProperty `json:"corridor,omitempty"`
+	Cube       *linkProperty `json:"cube,omitempty"`
+	Items      *linkProperty `json:"items,omitempty"`
+	Locations  *linkProperty `json:"locations,omitempty"`
+	Position   *linkProperty `json:"position,omitempty"`
+	Radius     *linkProperty `json:"radius,omitempty"`
 	Trajectory *linkProperty `json:"trajectory,omitempty"`
 }
 
 // EXTENT
 type spatial struct {
 	BBox []float32 `json:"bbox"`
-	CRS string `json:"crs"`
+	CRS  string    `json:"crs"`
 }
 
 type extent struct {
-	Spatial spatial `json:"spatial"`
-	Temporal string `json:"temporal"`
-	Vertical string `json:"vertical"`
+	Spatial  spatial `json:"spatial"`
+	Temporal string  `json:"temporal"`
+	Vertical string  `json:"vertical"`
 }
-
 
 // LANDING PAGE
 type landing struct {
-	Title string `json:"title"`
+	Title       string `json:"title"`
 	Description string `json:"description"`
-	Links []link `json:"links"`
+	Links       []link `json:"links"`
 }
 
 type collections struct {
 	Collections []collection `json:"collections"`
-	Links []link `json:"links"`
+	Links       []link       `json:"links"`
 }
 
 type collection struct {
-	ID string `json:"id"`
-	CRS string `json:"crs"`
-	DataQueries dataQueries `json:"data_queries"`
-	ParameterNames string `json:"parameter_names"`
-	OutputFormats []string `json:"output_formats"`
-	Extent extent `json:"extent"`
-	Links []link `json:"links"`
+	ID             string      `json:"id"`
+	CRS            string      `json:"crs"`
+	DataQueries    dataQueries `json:"data_queries"`
+	ParameterNames string      `json:"parameter_names"`
+	OutputFormats  []string    `json:"output_formats"`
+	Extent         extent      `json:"extent"`
+	Links          []link      `json:"links"`
 }
 
-type area struct {}
-type position struct {}
+type area struct{}
+type position struct{}
 
 // COVERAGEJSON
 type language struct {
 	En string `json:"en"`
 }
+
 func English(s string) *language {
 	lang := language{
 		En: s,
@@ -133,11 +133,11 @@ func English(s string) *language {
 }
 
 type unit struct {
-	Label *language `json:"label"`
-	Symbol string `json:"symbol"`
+	Label  *language `json:"label"`
+	Symbol string    `json:"symbol"`
 }
 type observedProperty struct {
-	ID string `json:"id"`
+	ID    string    `json:"id"`
 	Label *language `json:"label"`
 }
 type axis[T any] struct {
@@ -147,68 +147,68 @@ type axes struct {
 	X axis[float32] `json:"x"`
 	Y axis[float32] `json:"y"`
 	Z axis[float32] `json:"z"`
-	T axis[string] `json:"t"`
+	T axis[string]  `json:"t"`
 }
 type domain struct {
-	Type string `json:"type"`
-	DomainType string `json:"domainType"`
-	Axes axes `json:"axes"`
+	Type        string   `json:"type"`
+	DomainType  string   `json:"domainType"`
+	Axes        axes     `json:"axes"`
 	Referencing []string `json:"referencing"`
 }
 type parameter struct {
-	Type string `json:"type"`
-	Description *language `json:"description"`
-	Unit unit `json:"unit"`
+	Type             string           `json:"type"`
+	Description      *language        `json:"description"`
+	Unit             unit             `json:"unit"`
 	ObservedProperty observedProperty `json:"observedProperty"`
 }
 type ndarray struct {
-	Type string `json:"type"`
-	DataType string `json:"dataType"`
-	AxisNames []string `json:"axisNames"`
-	Shape []int `json:"shape"`
-	Values []float32 `json:"values"`
+	Type      string    `json:"type"`
+	DataType  string    `json:"dataType"`
+	AxisNames []string  `json:"axisNames"`
+	Shape     []int     `json:"shape"`
+	Values    []float32 `json:"values"`
 }
 type coverage struct {
-	Type string `json:"type"`
-	Domain domain `json:"domain"`
+	Type       string               `json:"type"`
+	Domain     domain               `json:"domain"`
 	Parameters map[string]parameter `json:"parameters"`
-	Ranges map[string]ndarray `json:"ranges"`
+	Ranges     map[string]ndarray   `json:"ranges"`
 }
 
 func newCoverage() *coverage {
 	cov := coverage{
 		Type: "CoverageJSON",
 		Domain: domain{
-			Type: "Domain",
+			Type:       "Domain",
 			DomainType: "Grid",
 			Axes: axes{
-				X: axis[float32]{ Values: []float32{} },
-				Y: axis[float32]{ Values: []float32{} },
-				Z: axis[float32]{ Values: []float32{} },
-				T: axis[string]{ Values: []string{} },
+				X: axis[float32]{Values: []float32{}},
+				Y: axis[float32]{Values: []float32{}},
+				Z: axis[float32]{Values: []float32{}},
+				T: axis[string]{Values: []string{}},
 			},
 			Referencing: []string{},
 		},
 		Parameters: map[string]parameter{
 			"QNH": parameter{
-				Type: "Parameter",
+				Type:        "Parameter",
 				Description: English("Atmospheric pressure"),
 				Unit: unit{
 					Label: English("hPa"),
 				},
 				ObservedProperty: observedProperty{
-					ID: "",
+					ID:    "",
 					Label: English("Atmospheric pressure"),
 				},
 			},
 		},
 		Ranges: map[string]ndarray{
 			"QNH": ndarray{
-				Type: "NdArray",
-				DataType: "float",
+				Type:      "NdArray",
+				DataType:  "float",
 				AxisNames: []string{"x", "y", "z", "t"},
-				Shape: []int{0, 0, 0, 0},
-				Values: []float32{},
+				Shape:     []int{0, 0, 0, 0},
+				Values:    []float32{},
 			},
 		},
 	}
@@ -217,46 +217,46 @@ func newCoverage() *coverage {
 
 // GEOJSON
 type geometry struct {
-	Type string `json:"type"`
-	Coordinates any `json:"coordinates"`
+	Type        string `json:"type"`
+	Coordinates any    `json:"coordinates"`
 }
+
 func newPoint() *geometry {
 	return &geometry{
-		Type: "Point",
+		Type:        "Point",
 		Coordinates: []float32{},
 	}
 }
 func newPolygon(coords [][]float32) *geometry {
 	return &geometry{
-		Type: "Polygon",
+		Type:        "Polygon",
 		Coordinates: coords,
 	}
 }
 
 type feature struct {
-	Type string `json:"type"`
-	Geometry *geometry `json:"geometry"`
+	Type       string         `json:"type"`
+	Geometry   *geometry      `json:"geometry"`
 	Properties map[string]any `json:"properties"`
 }
 type featureCollection struct {
-	Type string `json:"type"`
+	Type     string    `json:"type"`
 	Features []feature `json:"features"`
 }
 
 func newFeature(geo *geometry, props map[string]any) feature {
 	return feature{
-		Type: "Feature",
-		Geometry: geo,
+		Type:       "Feature",
+		Geometry:   geo,
 		Properties: props,
 	}
 }
 func newFeatureCollection(features []feature) *featureCollection {
-	return &featureCollection {
-		Type: "FeatureCollection",
+	return &featureCollection{
+		Type:     "FeatureCollection",
 		Features: features,
 	}
 }
-
 
 // HTTP HANDLERS
 
@@ -264,10 +264,10 @@ func getLanding(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, landing{
 		Title: "Environmental Data Retrieval server",
 		Links: []link{
-			{Href: "http://localhost:8080/", Rel: "self",},
-			{Href: "http://localhost:8080/api", Rel: "service-desc",},
-			{Href: "http://localhost:8080/collections", Rel: "data", Type: "application/json",},
-			{Href: "http://localhost:8080/conformance", Rel: "conformance",},
+			{Href: "http://localhost:8080/", Rel: "self"},
+			{Href: "http://localhost:8080/api", Rel: "service-desc"},
+			{Href: "http://localhost:8080/collections", Rel: "data", Type: "application/json"},
+			{Href: "http://localhost:8080/conformance", Rel: "conformance"},
 		},
 	})
 }
@@ -276,26 +276,26 @@ func getCollections(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, collections{
 		Collections: []collection{
 			{
-				ID: "regional-pressure-settings",
+				ID:  "regional-pressure-settings",
 				CRS: "EPSG:4326",
 				Extent: extent{
 					Spatial: spatial{
-						BBox: []float32{-90,-180,90,180},
-						CRS: "EPSG:4326",
+						BBox: []float32{-90, -180, 90, 180},
+						CRS:  "EPSG:4326",
 					},
 				},
 				ParameterNames: "qnh",
-				OutputFormats: []string{"CSV", "GeoJSON", "CoverageJSON"},
+				OutputFormats:  []string{"CSV", "GeoJSON", "CoverageJSON"},
 				DataQueries: dataQueries{
 					Area: &linkProperty{
 						Link: link{
 							Href: "http://localhost:8080/collections/regional-pressure-settings/area",
-							Rel: "data",
+							Rel:  "data",
 							Type: "application/json",
 							Variables: &variables{
-								Title: "Area query",
-								QueryType: "area",
-								OutputFormats: []string{"CoverageJSON"},
+								Title:               "Area query",
+								QueryType:           "area",
+								OutputFormats:       []string{"CoverageJSON"},
 								DefaultOutputFormat: "CoverageJSON",
 							},
 						},
@@ -303,12 +303,12 @@ func getCollections(c *gin.Context) {
 					Position: &linkProperty{
 						Link: link{
 							Href: "http://localhost:8080/collections/regional-pressure-settings/position",
-							Rel: "data",
+							Rel:  "data",
 							Type: "application/json",
 							Variables: &variables{
-								Title: "Position query",
-								QueryType: "position",
-								OutputFormats: []string{"CoverageJSON", "NetCDF4"},
+								Title:               "Position query",
+								QueryType:           "position",
+								OutputFormats:       []string{"CoverageJSON", "NetCDF4"},
 								DefaultOutputFormat: "CoverageJSON",
 							},
 						},
@@ -316,12 +316,12 @@ func getCollections(c *gin.Context) {
 					Locations: &linkProperty{
 						Link: link{
 							Href: "http://localhost:8080/collections/regional-pressure-settings/locations",
-							Rel: "data",
+							Rel:  "data",
 							Type: "application/json",
 							Variables: &variables{
-								Title: "Locations query",
-								QueryType: "locations",
-								OutputFormats: []string{"GeoJSON", "CoverageJSON", "CSV"},
+								Title:               "Locations query",
+								QueryType:           "locations",
+								OutputFormats:       []string{"GeoJSON", "CoverageJSON", "CSV"},
 								DefaultOutputFormat: "GeoJSON",
 							},
 						},
@@ -330,7 +330,7 @@ func getCollections(c *gin.Context) {
 				Links: []link{
 					{
 						Href: "http://localhost:8080/collections/regional-pressure-settings",
-						Rel: "self",
+						Rel:  "self",
 						Type: "application/json",
 					},
 				},
@@ -382,7 +382,7 @@ func getPosition(c *gin.Context) {
 
 type property struct {
 	Pressure []string
-	Time []string
+	Time     []string
 }
 
 func getLocations(c *gin.Context) {
@@ -450,18 +450,18 @@ func getLocations(c *gin.Context) {
 				} else {
 					value = property{
 						Pressure: []string{pressure},
-						Time: []string{time},
+						Time:     []string{time},
 					}
 				}
 				data[regionID] = value
 			}
 			for regionID, datum := range data {
 				features = append(features, newFeature(geo, map[string]any{
-					"region": regionID,
+					"region":   regionID,
 					"pressure": datum.Pressure,
-					"time": datum.Time,
+					"time":     datum.Time,
 				}))
-			} 
+			}
 			c.IndentedJSON(http.StatusOK, newFeatureCollection(features))
 			return
 		default:
