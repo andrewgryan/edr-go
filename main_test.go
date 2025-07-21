@@ -22,10 +22,16 @@ func TestHTTPServer(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/", nil)
 	router.ServeHTTP(w, req)
 
-	want := "Environmental Data Retrieval server"
+	want := landing{
+		Title: "Environmental Data Retrieval server",
+		Description: "A collection of aviation datasets",
+	}
 	got := new(landing)
 	err := json.Unmarshal(w.Body.Bytes(), &got)
-	if (want != got.Title) || err != nil {
-		t.Errorf("Wanted %s, got %s", want, got.Title) 
+	if (want.Title != got.Title) || err != nil {
+		t.Errorf("Wanted '%s', got '%s'", want.Title, got.Title) 
+	}
+	if (want.Description != got.Description) || err != nil {
+		t.Errorf("Wanted '%s', got '%s'", want.Description, got.Description) 
 	}
 }

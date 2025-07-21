@@ -263,6 +263,7 @@ func newFeatureCollection(features []feature) *featureCollection {
 func getLanding(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, landing{
 		Title: "Environmental Data Retrieval server",
+		Description: "A collection of aviation datasets",
 		Links: []link{
 			{Href: "http://localhost:8080/", Rel: "self"},
 			{Href: "http://localhost:8080/api", Rel: "service-desc"},
